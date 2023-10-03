@@ -1,8 +1,8 @@
 import express from 'express';
 // import { MongoClient, ServerApiVersion }  from('mongodb');
 import 'dotenv/config';
-import usersRouter from '~/routes/users.routes';
 import databaseService from '~/services/database.services';
+import rootRouter from './routers/index.routers';
 // import usersRouter from '~/routes/users.routes';
 
 const app = express();
@@ -16,9 +16,14 @@ app.get('/', (req, res) => {
 });
 
 // Config router
-app.use('/api/v1', usersRouter);
+app.use('/api/v1', rootRouter);
 
 app.listen(5000, () => {
   console.log(`App listening on port ${process.env.PORT}`);
-  databaseService.connect();
+  databaseService
+    .connect()
+    .then((result) => {
+      console.log('Pinged your deployment. You successfully connected to MongoDB!');
+    })
+    .catch(console.dir);
 });
