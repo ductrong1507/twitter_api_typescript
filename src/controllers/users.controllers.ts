@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { constrainedMemory } from 'process';
 import { RegisterReqBody } from '~/models/requests/User.requests';
-import Users from '~/models/schemas/User.schema';
-import databaseService from '~/services/database.services';
 import usersService from '~/services/users.services';
 
 export const getListUserController = async (req: Request, res: Response) => {
