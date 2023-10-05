@@ -14,8 +14,7 @@ class DatabaseService {
     try {
       // Connect the client to the server	(optional starting in v4.7)
       await this.client.connect();
-      // Send a ping to confirm a successful connection
-      // await this.db.command({ ping: 5 });
+      console.log('You successfully connected to MongoDB!');
     } catch (err) {
       console.log('err', err);
     }

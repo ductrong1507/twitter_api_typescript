@@ -23,7 +23,7 @@ app.listen(5000, () => {
   databaseService
     .connect()
     .then((result) => {
-      console.log('Pinged your deployment. You successfully connected to MongoDB!');
+      console.log('result', result);
     })
     .catch(console.dir);
 });
