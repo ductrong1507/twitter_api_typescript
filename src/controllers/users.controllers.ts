@@ -11,27 +11,23 @@ export const loginController = async (req: Request, res: Response) => {
   res.send('Login feature');
 };
 
-export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
+export const registerController = async (
+  req: Request<ParamsDictionary, any, RegisterReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
   const { name, email, date_of_birth, password, confirm_password } = req.body;
-  try {
-    const result = await usersService.register({
-      name,
-      email,
-      date_of_birth,
-      password,
-      confirm_password
-    });
+  // throw new Error('test error');
+  const result = await usersService.register({
+    name,
+    email,
+    date_of_birth,
+    password,
+    confirm_password
+  });
 
-    return res.status(201).send({
-      message: 'Register successfully',
-      result: result
-    });
-  } catch (error) {
-    console.log('error', error);
-
-    return res.status(400).send({
-      message: "Can't register user",
-      error
-    });
-  }
+  return res.status(201).send({
+    message: 'Register successfully',
+    result: result
+  });
 };

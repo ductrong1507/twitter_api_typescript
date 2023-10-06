@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 // import { MongoClient, ServerApiVersion }  from('mongodb');
 import 'dotenv/config';
 import databaseService from '~/services/database.services';
@@ -17,6 +17,15 @@ app.get('/', (req, res) => {
 
 // Config router
 app.use('/api/v1', rootRouter);
+
+// default error handler
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.log('error', error.message);
+  res.status(500).send({
+    message: 'Something went wrong!',
+    error
+  });
+});
 
 app.listen(5000, () => {
   console.log(`App listening on port ${process.env.PORT}`);
