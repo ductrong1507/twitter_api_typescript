@@ -10,6 +10,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 export const wrapHandler = (func: any) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // throw new Error('test normal error');
       await func(req, res, next);
     } catch (error) {
       next(error);

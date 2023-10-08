@@ -1,8 +1,9 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 // import { MongoClient, ServerApiVersion }  from('mongodb');
 import 'dotenv/config';
 import databaseService from '~/services/database.services';
-import rootRouter from './routers/index.routers';
+import rootRouter from '~/routers/index.routers';
+import { defaultErrorHandler } from '~/middlewares/error.middlewares';
 // import usersRouter from '~/routes/users.routes';
 
 const app = express();
@@ -19,20 +20,10 @@ app.get('/', (req, res) => {
 app.use('/api/v1', rootRouter);
 
 // default error handler
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.log('error', error.message);
-  res.status(500).send({
-    message: 'Something went wrong!',
-    error
-  });
-});
+app.use(defaultErrorHandler);
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log(`App listening on port ${process.env.PORT}`);
-  databaseService
-    .connect()
-    .then((result) => {
-      console.log('result', result);
-    })
-    .catch(console.dir);
+  // connect database
+  databaseService.connect();
 });
