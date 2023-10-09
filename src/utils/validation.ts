@@ -30,7 +30,6 @@ export const validate = (validations: RunnableValidationChains<ValidationChain>)
      */
     for (const key in errorObj) {
       const { msg } = errorObj[key];
-      console.log('errorObj[key]', errorObj[key]);
 
       // trả về lỗi nếu không phải lỗi do validate, trả về defaultErrorHandler
       if (msg instanceof ErrorWithStatus && msg.status !== HTTP_STATUS.UNPROCESSABLE_ENTITY) {

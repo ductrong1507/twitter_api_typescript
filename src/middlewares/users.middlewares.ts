@@ -1,7 +1,9 @@
 // import { Request, Response, NextFunction } from 'express';
 import { checkSchema } from 'express-validator';
 import { USERS_MESSAGES } from '~/constants/messages';
+import databaseService from '~/services/database.services';
 import usersService from '~/services/users.services';
+import { hashPassword } from '~/utils/crypto';
 import { validate } from '~/utils/validation';
 
 export const registerValidator = validate(
@@ -44,9 +46,7 @@ export const registerValidator = validate(
       notEmpty: {
         errorMessage: USERS_MESSAGES.REGISTER_PASSWORD_REQUIRED
       },
-      isString: {
-        errorMessage: USERS_MESSAGES.REGISTER_PASSWORD_STRING
-      },
+
       isLength: {
         options: { min: 6, max: 50 },
         errorMessage: USERS_MESSAGES.REGISTER_PASSWORD_LENGTH
@@ -56,9 +56,6 @@ export const registerValidator = validate(
     confirm_password: {
       notEmpty: {
         errorMessage: USERS_MESSAGES.REGISTER_CONFIRM_PASSWORD_REQUIRED
-      },
-      isString: {
-        errorMessage: USERS_MESSAGES.REGISTER_CONFIRM_PASSWORD_STRING
       },
       isLength: {
         options: { min: 6, max: 50 }
@@ -82,6 +79,42 @@ export const registerValidator = validate(
           strictSeparator: true
         },
         errorMessage: USERS_MESSAGES.REGISTER_DATE_OF_BIRTH_INVALID
+      }
+    }
+  })
+);
+
+export const loginValidator = validate(
+  checkSchema({
+    email: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.LOGIN_EMAIL_REQUIRED
+      },
+      isEmail: {
+        errorMessage: USERS_MESSAGES.LOGIN_EMAIL_INVALID
+      },
+      trim: true,
+      custom: {
+        options: async (value, { req }) => {
+          // check email exists in database
+          const user = await databaseService.users.findOne({ email: value, password: hashPassword(req.body.password) });
+          if (!user) {
+            throw new Error(USERS_MESSAGES.WRONG_EMAIL_OR_PASSWORD);
+          }
+          req.user = user;
+          return true;
+        }
+      }
+    },
+
+    password: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.LOGIN_PASSWORD_REQUIRED
+      },
+      // create length validation for password
+      isLength: {
+        options: { min: 6, max: 50 },
+        errorMessage: USERS_MESSAGES.LOGIN_PASSWORD_LENGTH
       }
     }
   })

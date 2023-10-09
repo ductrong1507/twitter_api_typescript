@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
+import { ObjectId } from 'mongodb';
+import { USERS_MESSAGES } from '~/constants/messages';
 import { RegisterReqBody } from '~/models/requests/User.requests';
+import Users from '~/models/schemas/User.schema';
 import usersService from '~/services/users.services';
 
 export const getListUserController = async (req: Request, res: Response) => {
   res.send('Users router is running!');
-};
-
-export const loginController = async (req: Request, res: Response) => {
-  res.send('Login feature');
 };
 
 export const registerController = async (
@@ -27,7 +26,22 @@ export const registerController = async (
   });
 
   return res.status(201).send({
-    message: 'Register successfully',
+    message: USERS_MESSAGES.REGISTER_SUCCESSFULLY,
     result: result
+  });
+};
+
+export const loginController = async (req: Request, res: Response) => {
+  const user = req.user as Users;
+  const user_id = user._id as ObjectId;
+
+  const { accessToken, refreshToken } = await usersService.login(user_id.toString());
+
+  return res.status(200).send({
+    message: USERS_MESSAGES.LOGIN_SUCCESSFULLY,
+    result: {
+      accessToken,
+      refreshToken
+    }
   });
 };

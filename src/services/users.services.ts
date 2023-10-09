@@ -5,6 +5,8 @@ import databaseService from '~/services/database.services';
 import { hashPassword } from '~/utils/crypto';
 import { signToken } from '~/utils/jwt';
 import { TokenType } from '~/constants/enums';
+import { ObjectId } from 'mongodb';
+import RefreshToken from '~/models/schemas/RefreshToken.schema';
 
 class UsersService {
   private signAccessToken(user_id: string) {
@@ -31,6 +33,12 @@ class UsersService {
     });
   }
 
+  async checkEmailExists(email: string) {
+    const result = await databaseService.users.findOne({ email });
+    // i want return true or false
+    return Boolean(result);
+  }
+
   async register(payload: RegisterReqBody) {
     const result = await databaseService.users.insertOne(
       new Users({
@@ -47,16 +55,39 @@ class UsersService {
       this.signRefreshToken(user_id)
     ]);
 
+    // save refresh token to database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refreshToken
+      })
+    );
+
     return {
       accessToken,
       refreshToken
     };
   }
 
-  async checkEmailExists(email: string) {
-    const result = await databaseService.users.findOne({ email });
-    // i want return true or false
-    return Boolean(result);
+  // login function
+  async login(user_id: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signAccessToken(user_id),
+      this.signRefreshToken(user_id)
+    ]);
+
+    // save refresh token to database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refreshToken
+      })
+    );
+
+    return {
+      accessToken,
+      refreshToken
+    };
   }
 }
 

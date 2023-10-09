@@ -1,4 +1,5 @@
 import { Collection, Db, MongoClient } from 'mongodb';
+import RefreshToken from '~/models/schemas/RefreshToken.schema';
 import Users from '~/models/schemas/User.schema';
 
 class DatabaseService {
@@ -23,6 +24,11 @@ class DatabaseService {
   // tạo getter để lấy colection user
   get users(): Collection<Users> {
     return this.db.collection(process.env.DB_USER_COLLECTION as string);
+  }
+
+  // tạo getter để lấy colection refresh token
+  get refreshTokens(): Collection<RefreshToken> {
+    return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string);
   }
 }
 
